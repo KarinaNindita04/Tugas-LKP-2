@@ -1,52 +1,120 @@
-
 package com.example.myapplication
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        MainScreen()
-
-                    }
+                MaterialTheme {
+                    MoneyTrackScreen()
                 }
             }
         }
     }
 }
 
+data class MoneyTrack(
+    val nama: String,
+    val deskripsi: String,
+    val harga: String,
+    val gambar: Int
+)
+
+val moneyList = listOf(
+    MoneyTrack("Makan Siang", "Makan di kantin kampus", "Rp15000", R.drawable.makan),
+    MoneyTrack("Transport", "Naik ojek ke kampus", "Rp10000", R.drawable.transport),
+    MoneyTrack("Jajan", "Beli kopi dan snack", "Rp20000", R.drawable.jajan),
+    MoneyTrack("Internet", "Beli paket data", "Rp30000", R.drawable.internet),
+    MoneyTrack("Tabungan", "Menabung harian", "Rp10000", R.drawable.tabungan)
+)
+
 @Composable
-fun Greeting(
-    name: String, npm: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello, saya $name dengan NPM: $npm siap belajar Compose.",
-        modifier = modifier
-    )
+fun MoneyTrackScreen() {
+
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+
+        Text(
+            text = "MoneyTrack Student",
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        moneyList.forEach { item ->
+            DetailScreen(item)
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+fun DetailScreen(data: MoneyTrack) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+
+        Image(
+            painter = painterResource(id = data.gambar),
+            contentDescription = data.nama,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = data.nama,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(text = data.deskripsi)
+
+        Text(
+            text = data.harga,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(onClick = { }) {
+            Text("Catat Pengeluaran")
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MoneyTrackPreview() {
     MyApplicationTheme {
-        Greeting("Android",
-            npm = "2407051001"
-        )
+        MoneyTrackScreen()
     }
 }
