@@ -11,12 +11,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -60,6 +67,7 @@ fun MoneyTrackScreen() {
         Text(
             text = "MoneyTrack Student",
             fontWeight = FontWeight.Bold
+
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -75,19 +83,42 @@ fun MoneyTrackScreen() {
 @Composable
 fun DetailScreen(data: MoneyTrack) {
 
+    var isFavorite by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
 
-        Image(
-            painter = painterResource(id = data.gambar),
-            contentDescription = data.nama,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        )
+        Box {
+
+            Image(
+                painter = painterResource(id = data.gambar),
+                contentDescription = data.nama,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+            )
+
+            IconButton(
+                onClick = { isFavorite = !isFavorite },
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+
+                Icon(
+                    imageVector =
+                        if (isFavorite) Icons.Filled.Favorite
+                        else Icons.Outlined.FavoriteBorder,
+
+                    contentDescription = "Favorite",
+
+                    tint =
+                        if (isFavorite) Color.Red
+                        else Color.Gray
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
