@@ -13,13 +13,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.ui.theme.PraktiktamTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -29,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
+            PraktiktamTheme {
                 MoneyTrackScreen()
             }
         }
@@ -55,7 +52,6 @@ val moneyList = listOf(
     MoneyTrack("Tabungan", "Menabung harian", "Rp10.000", R.drawable.tabungan)
 )
 
-// Dummy untuk rekomendasi food
 data class Food(val name: String, val price: String, val photo: Int)
 
 val dummyFood = listOf(
@@ -81,20 +77,17 @@ fun MoneyTrackScreen() {
         item {
             Text(
                 text = "MoneyTrack Student",
-                fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge
             )
         }
 
-        // -------------------------
-        // REKOMENDASI (HORIZONTAL)
-        // -------------------------
+        // REKOMENDASI
         item {
             Text(
                 text = "Rekomendasi Populer",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium
             )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -104,14 +97,11 @@ fun MoneyTrackScreen() {
             }
         }
 
-        // -------------------------
-        // DAFTAR MONEYTRACK (VERTIKAL)
-        // -------------------------
+        // LIST
         item {
             Text(
                 text = "Daftar Pengeluaran",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium
             )
         }
 
@@ -122,7 +112,7 @@ fun MoneyTrackScreen() {
 }
 
 // -----------------------------------------------------------
-// ITEM Rekomendasi (Horizontal)
+// CARD HORIZONTAL
 // -----------------------------------------------------------
 
 @Composable
@@ -131,7 +121,9 @@ fun FoodRowItem(food: Food) {
         modifier = Modifier
             .width(150.dp)
             .height(180.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column {
             Image(
@@ -142,75 +134,91 @@ fun FoodRowItem(food: Food) {
                     .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
+
             Spacer(modifier = Modifier.height(8.dp))
-            Text(food.name, fontWeight = FontWeight.Bold)
-            Text(food.price)
+
+            Text(
+                text = food.name,
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Text(
+                text = food.price,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
 // -----------------------------------------------------------
-// DETAIL ITEM (Vertikal)
+// DETAIL ITEM
 // -----------------------------------------------------------
 
 @Composable
 fun DetailItem(data: MoneyTrack) {
     var isFavorite by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        modifier = Modifier.fillMaxWidth()
     ) {
 
-        Box {
-            Image(
-                painter = painterResource(id = data.gambar),
-                contentDescription = data.nama,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentScale = ContentScale.Crop
+        Column(modifier = Modifier.padding(8.dp)) {
+
+            Box {
+                Image(
+                    painter = painterResource(id = data.gambar),
+                    contentDescription = data.nama,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                IconButton(
+                    onClick = { isFavorite = !isFavorite },
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector =
+                            if (isFavorite) Icons.Filled.Favorite
+                            else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint =
+                            if (isFavorite)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = data.nama,
+                style = MaterialTheme.typography.titleMedium
             )
 
-            IconButton(
-                onClick = { isFavorite = !isFavorite },
-                modifier = Modifier.align(Alignment.TopEnd)
-            ) {
-                Icon(
-                    imageVector =
-                        if (isFavorite) Icons.Filled.Favorite
-                        else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favorite",
-                    tint =
-                        if (isFavorite) Color.Red
-                        else Color.Gray
-                )
+            Text(
+                text = data.deskripsi,
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = data.harga,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(onClick = { }) {
+                Text("Catat Pengeluaran")
             }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = data.nama, fontWeight = FontWeight.Bold)
-        Text(text = data.deskripsi)
-        Text(text = data.harga, fontWeight = FontWeight.Bold)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(onClick = { }) {
-            Text("Catat Pengeluaran")
-        }
-    }
-}
-
-// -----------------------------------------------------------
-// PREVIEW
-// -----------------------------------------------------------
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewMoneyTrack() {
-    MyApplicationTheme {
-        MoneyTrackScreen()
     }
 }
