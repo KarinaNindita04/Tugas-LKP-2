@@ -20,6 +20,14 @@ import com.example.myapplication.ui.theme.PraktiktamTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,68 +165,107 @@ fun FoodRowItem(food: Food) {
 
 @Composable
 fun DetailItem(data: MoneyTrack) {
+
     var isFavorite by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        Column(modifier = Modifier.padding(8.dp)) {
+    Box(modifier = Modifier.fillMaxWidth()) {
 
-            Box {
-                Image(
-                    painter = painterResource(id = data.gambar),
-                    contentDescription = data.nama,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
-                    contentScale = ContentScale.Crop
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Column(modifier = Modifier.padding(8.dp)) {
+
+                Box {
+                    Image(
+                        painter = painterResource(id = data.gambar),
+                        contentDescription = data.nama,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    IconButton(
+                        onClick = { isFavorite = !isFavorite },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector =
+                                if (isFavorite) Icons.Filled.Favorite
+                                else Icons.Outlined.FavoriteBorder,
+                            contentDescription = "Favorite",
+                            tint =
+                                if (isFavorite)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = data.nama,
+                    style = MaterialTheme.typography.titleMedium
                 )
 
-                IconButton(
-                    onClick = { isFavorite = !isFavorite },
-                    modifier = Modifier.align(Alignment.TopEnd)
+                Text(
+                    text = data.deskripsi,
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = data.harga,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            isLoading = true
+                            delay(2000)
+
+                            snackbarHostState.showSnackbar(
+                                "Pengeluaran ${data.nama} berhasil dicatat!"
+                            )
+
+                            isLoading = false
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
                 ) {
-                    Icon(
-                        imageVector =
-                            if (isFavorite) Icons.Filled.Favorite
-                            else Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint =
-                            if (isFavorite)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.onSurface
-                    )
+
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Memproses...")
+                    } else {
+                        Text("Catat Pengeluaran")
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = data.nama,
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Text(
-                text = data.deskripsi,
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Text(
-                text = data.harga,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(onClick = { }) {
-                Text("Catat Pengeluaran")
-            }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
