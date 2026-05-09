@@ -9,30 +9,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.myapplication.ui.theme.PraktiktamTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
+
         setContent {
             PraktiktamTheme {
                 MoneyTrackScreen()
@@ -53,19 +52,68 @@ data class MoneyTrack(
 )
 
 val moneyList = listOf(
-    MoneyTrack("Makan Siang", "Makan di kantin kampus", "Rp15.000", R.drawable.makan),
-    MoneyTrack("Transport", "Naik ojek ke kampus", "Rp10.000", R.drawable.transport),
-    MoneyTrack("Jajan", "Beli kopi dan snack", "Rp20.000", R.drawable.jajan),
-    MoneyTrack("Internet", "Beli paket data", "Rp30.000", R.drawable.internet),
-    MoneyTrack("Tabungan", "Menabung harian", "Rp10.000", R.drawable.tabungan)
+
+    MoneyTrack(
+        "Makan Siang",
+        "Makan di kantin kampus",
+        "Rp15.000",
+        R.drawable.makan
+    ),
+
+    MoneyTrack(
+        "Transport",
+        "Naik ojek ke kampus",
+        "Rp10.000",
+        R.drawable.transport
+    ),
+
+    MoneyTrack(
+        "Jajan",
+        "Beli kopi dan snack",
+        "Rp20.000",
+        R.drawable.jajan
+    ),
+
+    MoneyTrack(
+        "Internet",
+        "Beli paket data",
+        "Rp30.000",
+        R.drawable.internet
+    ),
+
+    MoneyTrack(
+        "Tabungan",
+        "Menabung harian",
+        "Rp10.000",
+        R.drawable.tabungan
+    )
 )
 
-data class Food(val name: String, val price: String, val photo: Int)
+data class Food(
+    val name: String,
+    val price: String,
+    val photo: String
+)
 
 val dummyFood = listOf(
-    Food("Ayam Geprek", "Rp12.000", R.drawable.makan),
-    Food("Burger", "Rp18.000", R.drawable.jajan),
-    Food("Seblak", "Rp10.000", R.drawable.makan)
+
+    Food(
+        "Mie Goreng",
+        "Rp12.000",
+        "https://images.unsplash.com/photo-1512058564366-18510be2db19"
+    ),
+
+    Food(
+        "Burger",
+        "Rp18.000",
+        "https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+    ),
+
+    Food(
+        "Stike Daging",
+        "Rp10.000",
+        "https://images.unsplash.com/photo-1544025162-d76694265947"
+    )
 )
 
 // -----------------------------------------------------------
@@ -79,10 +127,12 @@ fun MoneyTrackScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
+
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
 
         item {
+
             Text(
                 text = "MoneyTrack Student",
                 style = MaterialTheme.typography.titleLarge
@@ -91,6 +141,7 @@ fun MoneyTrackScreen() {
 
         // REKOMENDASI
         item {
+
             Text(
                 text = "Rekomendasi Populer",
                 style = MaterialTheme.typography.titleMedium
@@ -98,7 +149,11 @@ fun MoneyTrackScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            LazyRow(
+                horizontalArrangement =
+                    Arrangement.spacedBy(16.dp)
+            ) {
+
                 items(dummyFood) { food ->
                     FoodRowItem(food)
                 }
@@ -107,6 +162,7 @@ fun MoneyTrackScreen() {
 
         // LIST
         item {
+
             Text(
                 text = "Daftar Pengeluaran",
                 style = MaterialTheme.typography.titleMedium
@@ -125,25 +181,43 @@ fun MoneyTrackScreen() {
 
 @Composable
 fun FoodRowItem(food: Food) {
+
     Card(
         modifier = Modifier
             .width(150.dp)
             .height(180.dp),
+
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor =
+                MaterialTheme.colorScheme.surface
         )
     ) {
+
         Column {
-            Image(
-                painter = painterResource(id = food.photo),
+
+            AsyncImage(
+                model = food.photo,
+
                 contentDescription = food.name,
+
+                placeholder = painterResource(
+                    id = R.drawable.makan
+                ),
+
+                error = painterResource(
+                    id = R.drawable.jajan
+                ),
+
                 modifier = Modifier
                     .height(120.dp)
                     .fillMaxWidth(),
+
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
 
             Text(
                 text = food.name,
@@ -166,42 +240,70 @@ fun FoodRowItem(food: Food) {
 @Composable
 fun DetailItem(data: MoneyTrack) {
 
-    var isFavorite by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
+    var isFavorite by remember {
+        mutableStateOf(false)
+    }
+
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
 
     val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
 
     Box(modifier = Modifier.fillMaxWidth()) {
 
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor =
+                    MaterialTheme.colorScheme.surface
             ),
+
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            Column(modifier = Modifier.padding(8.dp)) {
+            Column(
+                modifier = Modifier.padding(8.dp)
+            ) {
 
                 Box {
+
                     Image(
-                        painter = painterResource(id = data.gambar),
+                        painter = painterResource(
+                            id = data.gambar
+                        ),
+
                         contentDescription = data.nama,
+
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
+
                         contentScale = ContentScale.Crop
                     )
 
                     IconButton(
-                        onClick = { isFavorite = !isFavorite },
-                        modifier = Modifier.align(Alignment.TopEnd)
+                        onClick = {
+                            isFavorite = !isFavorite
+                        },
+
+                        modifier = Modifier.align(
+                            Alignment.TopEnd
+                        )
                     ) {
+
                         Icon(
                             imageVector =
-                                if (isFavorite) Icons.Filled.Favorite
-                                else Icons.Outlined.FavoriteBorder,
+                                if (isFavorite)
+                                    Icons.Filled.Favorite
+                                else
+                                    Icons.Outlined.FavoriteBorder,
+
                             contentDescription = "Favorite",
+
                             tint =
                                 if (isFavorite)
                                     MaterialTheme.colorScheme.primary
@@ -211,7 +313,9 @@ fun DetailItem(data: MoneyTrack) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
 
                 Text(
                     text = data.nama,
@@ -229,12 +333,17 @@ fun DetailItem(data: MoneyTrack) {
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
 
                 Button(
                     onClick = {
+
                         coroutineScope.launch {
+
                             isLoading = true
+
                             delay(2000)
 
                             snackbarHostState.showSnackbar(
@@ -244,19 +353,31 @@ fun DetailItem(data: MoneyTrack) {
                             isLoading = false
                         }
                     },
+
                     modifier = Modifier.fillMaxWidth(),
+
                     enabled = !isLoading
                 ) {
 
                     if (isLoading) {
+
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
+
+                            color =
+                                MaterialTheme.colorScheme.onPrimary,
+
                             strokeWidth = 2.dp
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Spacer(
+                            modifier = Modifier.width(8.dp)
+                        )
+
                         Text("Memproses...")
+
                     } else {
+
                         Text("Catat Pengeluaran")
                     }
                 }
@@ -265,7 +386,10 @@ fun DetailItem(data: MoneyTrack) {
 
         SnackbarHost(
             hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
+
+            modifier = Modifier.align(
+                Alignment.BottomCenter
+            )
         )
     }
 }
